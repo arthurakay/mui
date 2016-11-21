@@ -30,6 +30,12 @@ function initialize(buttonEl) {
   // exit if element is INPUT (doesn't support absolute positioned children)
   if (buttonEl.tagName === 'INPUT') return;
 
+  // add ripple container
+  var el = document.createElement('span');
+  el.className = 'mui-btn__ripple-container';
+  el.innerHTML = '<span class="mui-ripple"></span>';
+  buttonEl.appendChild(el);
+
   // attach event handler
   jqLite.on(buttonEl, mouseDownEvents, mouseDownHandler);
 }
@@ -54,14 +60,13 @@ function mouseDownHandler(ev) {
     buttonEl.muiMouseUp = true;
   }
 
-  // create ripple element
-  var rippleEl = createRippleEl(ev, buttonEl);
-
-  buttonEl.appendChild(rippleEl);
+  // get ripple element
+  var rippleEl = buttonEl.querySelector('.mui-ripple');
+  jqLite.addClass(rippleEl, 'mui--is-visible');
 
   // animate in
   util.requestAnimationFrame(function() {
-    jqLite.addClass(rippleEl, 'mui--animate-in mui--active');
+    jqLite.addClass(rippleEl, 'mui--is-animating');
   });
 }
 
