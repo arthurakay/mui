@@ -66,7 +66,30 @@ function mouseDownHandler(ev) {
 
   // animate in
   util.requestAnimationFrame(function() {
-    jqLite.addClass(rippleEl, 'mui--is-animating');
+    var t1 = 'translate(-50%, -50%) translate(7px, 30px) scale(0.0001, 0.0001)';
+    jqLite.css(rippleEl, {
+      'webkitTransform': t1,
+      'msTransform': t1,
+      'transform': t1,
+      'width': '194.58995463159548px',
+      'height': '194.58995463159548px'
+    });
+
+    // start animation
+    jqLite.removeClass(rippleEl, 'mui--is-animating');
+
+
+    // end animation
+    util.requestAnimationFrame(function() {
+      var t2 = 'translate(-50%, -50%) translate(7px, 30px)';
+      jqLite.css(rippleEl, {
+        'webkitTransform': t2,
+        'msTransform': t2,
+        'transform': t2
+      });
+
+      jqLite.addClass(rippleEl, 'mui--is-animating');
+    });
   });
 }
 
