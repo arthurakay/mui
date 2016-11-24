@@ -1217,9 +1217,6 @@ module.exports = overlayFn;
 var jqLite = require('./lib/jqLite'),
     util = require('./lib/util'),
     animationHelpers = require('./lib/animationHelpers'),
-    btnClass = 'mui-btn',
-    btnFABClass = 'mui-btn--fab',
-    rippleClass = 'mui-ripple-effect',
     supportsTouch = 'ontouchstart' in document.documentElement,
     mouseDownEvents = (supportsTouch) ? 'touchstart' : 'mousedown',
     mouseUpEvents = (supportsTouch) ? 'touchend' : 'mouseup mouseleave',
@@ -1237,6 +1234,15 @@ function initialize(buttonEl) {
 
   // exit if element is INPUT (doesn't support absolute positioned children)
   if (buttonEl.tagName === 'INPUT') return;
+
+  // add ripple container (to avoid https://github.com/muicss/mui/issues/169)
+  var el = document.createElement('span');
+  el.className = 'mui-btn__ripple-container';
+  el.innerHTML = '<span class="mui-ripple"></span>';
+  buttonEl.appendChild(el);
+
+  // cache reference to ripple element
+  buttonEl._rippleEl = el.children[0];
 
   // attach event handler
   jqLite.on(buttonEl, mouseDownEvents, mouseDownHandler);
@@ -1256,20 +1262,56 @@ function mouseDownHandler(ev) {
   // exit if button is disabled
   if (buttonEl.disabled === true) return;
 
-  // add mouseup event to button once
-  if (!buttonEl.muiMouseUp) {
+  // get ripple element offset values and (x, y) position of click
+  var offset = jqLite.offset(buttonEl),
+      clickEv = (ev.type === 'touchstart') ? ev.touches[0] : ev,
+      xPos = Math.round(clickEv.pageX - offset.left),
+      yPos = Math.round(clickEv.pageY - offset.top);
+
+  // get ripple element from cache
+  var rippleEl = buttonEl._rippleEl;
+
+  // add data and mouseup handler to button on first-click
+  if (!rippleEl._init) {
+    // set ripple size
+    var diameter = offset.height * offset.height + offset.width * offset.width;
+    diameter = 2 * Math.sqrt(diameter) + 2 + 'px';
+
+    jqLite.css(rippleEl, {
+      width: diameter,
+      height: diameter
+    });
+
+    // add mouseup event to button
     jqLite.on(buttonEl, mouseUpEvents, mouseUpHandler);
-    buttonEl.muiMouseUp = true;
+
+    // set flag
+    rippleEl._init = true;
   }
 
-  // create ripple element
-  var rippleEl = createRippleEl(ev, buttonEl);
+  // css transform
+  var tEnd = 'translate(-50%, -50%) translate(' + xPos + 'px,' + yPos + 'px)',
+      tStart = tEnd + ' scale(0.0001, 0.0001)';
 
-  buttonEl.appendChild(rippleEl);
+  // set position and initial scale
+  jqLite.css(rippleEl, {
+    'webkitTransform': tStart,
+    'msTransform': tStart,
+    'transform': tStart
+  });
 
-  // animate in
+  jqLite.addClass(rippleEl, 'mui--is-visible');
+  jqLite.removeClass(rippleEl, 'mui--is-animating');
+
+  // start animation
   util.requestAnimationFrame(function() {
-    jqLite.addClass(rippleEl, 'mui--animate-in mui--active');
+    jqLite.css(rippleEl, {
+      'webkitTransform': tEnd,
+      'msTransform': tEnd,
+      'transform': tEnd
+    });
+    
+    jqLite.addClass(rippleEl, 'mui--is-animating');
   });
 }
 
@@ -1279,70 +1321,14 @@ function mouseDownHandler(ev) {
  * @param {Event} ev - The DOM event
  */
 function mouseUpHandler(ev) {
-  var children = this.children,
-      i = children.length,
-      rippleEls = [],
-      el;
+  // get ripple element
+  var rippleEl = this._rippleEl;
 
-  // animate out ripples
-  while (i--) {
-    el = children[i];
-    if (jqLite.hasClass(el, rippleClass)) {
-      jqLite.addClass(el, 'mui--animate-out');
-      rippleEls.push(el);
-    }
-  }
-
-  // remove ripples after animation
-  if (rippleEls.length) {
-    setTimeout(function() {
-      var i = rippleEls.length,
-          el,
-          parentNode;
-
-      // remove elements
-      while (i--) {
-        el = rippleEls[i];
-        parentNode = el.parentNode;
-        if (parentNode) parentNode.removeChild(el);
-      }
-    }, animationDuration);
-  }
-}
-
-
-/**
- * Create ripple element  
- * @param {Element} - buttonEl - The button element.
- */
-function createRippleEl(ev, buttonEl) {
-  // get (x, y) position of click
-  var offset = jqLite.offset(buttonEl),
-      clickEv = (ev.type === 'touchstart') ? ev.touches[0] : ev,
-      xPos = clickEv.pageX - offset.left,
-      yPos = clickEv.pageY - offset.top,
-      diameter,
-      radius,
-      rippleEl;
-
-  // calculate diameter
-  diameter = Math.sqrt(offset.width * offset.width + 
-                       offset.height * offset.height) * 2;
-
-  // create element
-  rippleEl = document.createElement('div'),
-  rippleEl.className = rippleClass;
-
-  radius = diameter / 2;
-
-  jqLite.css(rippleEl, {
-    height: diameter + 'px',
-    width: diameter + 'px',
-    top: yPos - radius + 'px',
-    left: xPos - radius + 'px'
+  // allow a repaint to occur before removing class so animation shows for
+  // tap events
+  util.requestAnimationFrame(function() {
+    jqLite.removeClass(rippleEl, 'mui--is-visible');
   });
-
-  return rippleEl;
 }
 
 
@@ -1351,7 +1337,7 @@ module.exports = {
   /** Initialize module listeners */
   initListeners: function() {
     // markup elements available when method is called
-    var elList = document.getElementsByClassName(btnClass),
+    var elList = document.getElementsByClassName('mui-btn'),
         i = elList.length;
     while (i--) initialize(elList[i]);
 

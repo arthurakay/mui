@@ -184,11 +184,11 @@ var Button = function (_React$Component) {
           v = void 0;
 
       var ripples = this.state.ripples;
-      var _props = this.props;
-      var color = _props.color;
-      var size = _props.size;
-      var variant = _props.variant;
-      var reactProps = babelHelpers.objectWithoutProperties(_props, ['color', 'size', 'variant']);
+      var _props = this.props,
+          color = _props.color,
+          size = _props.size,
+          variant = _props.variant,
+          reactProps = babelHelpers.objectWithoutProperties(_props, ['color', 'size', 'variant']);
 
       // button attributes
 
