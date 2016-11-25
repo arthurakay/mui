@@ -116,8 +116,8 @@ class Button extends React.Component {
     // add ripple to state
     this.setState({
       ripple: {
-        xPos: clickEv.pageX - offset.left,
-        yPos: clickEv.pageY - offset.top,
+        xPos: Math.round(clickEv.pageX - offset.left),
+        yPos: Math.round(clickEv.pageY - offset.top),
         diameter: diameter        
       }
     });
