@@ -32,6 +32,10 @@ class Button extends React.Component {
     this.onTouchEndCB = cb(this, 'onTouchEnd');
   }
 
+  state = {
+    ripple: null
+  };
+
   static propTypes = {
     color: PropTypes.oneOf(['default', 'primary', 'danger', 'dark', 'accent']),
     size: PropTypes.oneOf(['default', 'small', 'large']),
@@ -186,7 +190,8 @@ class Button extends React.Component {
       >
         {this.props.children}
         <span className="mui-btn__ripple-container">
-          <span className={rippleCls} style={rippleStyle}></span>
+          <span ref="rippleEl" className={rippleCls} style={rippleStyle}>
+          </span>
         </span>
       </button>
     );
