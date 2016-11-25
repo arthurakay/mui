@@ -11,8 +11,7 @@ var jqLite = require('./lib/jqLite'),
     animationHelpers = require('./lib/animationHelpers'),
     supportsTouch = 'ontouchstart' in document.documentElement,
     mouseDownEvents = (supportsTouch) ? 'touchstart' : 'mousedown',
-    mouseUpEvents = (supportsTouch) ? 'touchend' : 'mouseup mouseleave',
-    animationDuration = 600;
+    mouseUpEvents = (supportsTouch) ? 'touchend' : 'mouseup mouseleave';
 
 
 /**
