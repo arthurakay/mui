@@ -706,12 +706,12 @@ h4, h5, h6 {
 }
 
 .mui-btn:active:hover {
-  box-shadow: 0 0px 2px rgba(0, 0, 0, 0.12), 1px 3px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.12), 1px 3px 4px rgba(0, 0, 0, 0.2);
 }
 
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .mui-btn:active:hover {
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.12), -1px 0px 2px rgba(0, 0, 0, 0.12), 0 0px 2px rgba(0, 0, 0, 0.12), 1px 3px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.12), -1px 0px 2px rgba(0, 0, 0, 0.12), 0 0px 4px rgba(0, 0, 0, 0.12), 1px 3px 4px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -746,12 +746,12 @@ h4, h5, h6 {
 }
 
 .mui-btn--raised:active, .mui-btn--fab:active {
-  box-shadow: 0 0px 2px rgba(0, 0, 0, 0.12), 1px 3px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.12), 1px 3px 4px rgba(0, 0, 0, 0.2);
 }
 
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .mui-btn--raised:active, .mui-btn--fab:active {
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.12), -1px 0px 2px rgba(0, 0, 0, 0.12), 0 0px 2px rgba(0, 0, 0, 0.12), 1px 3px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.12), -1px 0px 2px rgba(0, 0, 0, 0.12), 0 0px 4px rgba(0, 0, 0, 0.12), 1px 3px 4px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -2509,27 +2509,23 @@ th {
  * MUI Ripple module
  */
 .mui-btn__ripple-container {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
   height: 100%;
-  left: 0px;
-  position: absolute;
-  top: 0px;
   width: 100%;
-  z-index: 0;
   overflow: hidden;
+  z-index: 0;
 }
 
 .mui-ripple {
-  border-radius: 50%;
-  height: 50px;
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
   position: absolute;
   top: 0;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  overflow: hidden;
+  left: 0;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .mui-ripple.mui--is-animating {
@@ -2562,10 +2558,6 @@ th {
 
 .mui-btn--flat .mui-ripple {
   background-color: #a6a6a6;
-}
-
-.mui-btn[disabled] .mui-btn.mui-btn--disabled .mui-ripple {
-  background-color: transparent;
 }
 
 /**
