@@ -11,8 +11,7 @@ var jqLite = require('./lib/jqLite'),
     animationHelpers = require('./lib/animationHelpers'),
     supportsTouch = 'ontouchstart' in document.documentElement,
     mouseDownEvents = (supportsTouch) ? 'touchstart' : 'mousedown',
-    mouseUpEvents = (supportsTouch) ? 'touchend' : 'mouseup mouseleave',
-    animationDuration = 600;
+    mouseUpEvents = (supportsTouch) ? 'touchend' : 'mouseup mouseleave';
 
 
 /**
@@ -49,37 +48,28 @@ function mouseDownHandler(ev) {
   // only left clicks
   if (ev.type === 'mousedown' && ev.button !== 0) return;
 
-  var buttonEl = this;
+  var buttonEl = this,
+      rippleEl = buttonEl._rippleEl;
 
   // exit if button is disabled
-  if (buttonEl.disabled === true) return;
+  if (buttonEl.disabled) return;
+
+  // add mouseup handler on first-click
+  if (!rippleEl._init) {
+    jqLite.on(buttonEl, mouseUpEvents, mouseUpHandler);
+    rippleEl._init = true;
+  }
 
   // get ripple element offset values and (x, y) position of click
   var offset = jqLite.offset(buttonEl),
       clickEv = (ev.type === 'touchstart') ? ev.touches[0] : ev,
       xPos = Math.round(clickEv.pageX - offset.left),
-      yPos = Math.round(clickEv.pageY - offset.top);
+      yPos = Math.round(clickEv.pageY - offset.top),
+      diameter;
 
-  // get ripple element from cache
-  var rippleEl = buttonEl._rippleEl;
-
-  // add data and mouseup handler to button on first-click
-  if (!rippleEl._init) {
-    // set ripple size
-    var diameter = offset.height * offset.height + offset.width * offset.width;
-    diameter = 2 * Math.sqrt(diameter) + 2 + 'px';
-
-    jqLite.css(rippleEl, {
-      width: diameter,
-      height: diameter
-    });
-
-    // add mouseup event to button
-    jqLite.on(buttonEl, mouseUpEvents, mouseUpHandler);
-
-    // set flag
-    rippleEl._init = true;
-  }
+  // calculate diameter
+  diameter = Math.sqrt(offset.height * offset.height + 
+                       offset.width * offset.width) * 2 + 2 + 'px';
 
   // css transform
   var tEnd = 'translate(-50%, -50%) translate(' + xPos + 'px,' + yPos + 'px)',
@@ -87,9 +77,11 @@ function mouseDownHandler(ev) {
 
   // set position and initial scale
   jqLite.css(rippleEl, {
-    'webkitTransform': tStart,
-    'msTransform': tStart,
-    'transform': tStart
+    width: diameter,
+    height: diameter,
+    webkitTransform: tStart,
+    msTransform: tStart,
+    transform: tStart
   });
 
   jqLite.addClass(rippleEl, 'mui--is-visible');
@@ -98,9 +90,9 @@ function mouseDownHandler(ev) {
   // start animation
   util.requestAnimationFrame(function() {
     jqLite.css(rippleEl, {
-      'webkitTransform': tEnd,
-      'msTransform': tEnd,
-      'transform': tEnd
+      webkitTransform: tEnd,
+      msTransform: tEnd,
+      transform: tEnd
     });
     
     jqLite.addClass(rippleEl, 'mui--is-animating');

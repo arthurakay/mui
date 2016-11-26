@@ -3,27 +3,23 @@
  */
 
 .mui-btn__ripple-container {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
   height: 100%;
-  left: 0px;
-  position: absolute;
-  top: 0px;
   width: 100%;
-  z-index: 0;
   overflow: hidden;
+  z-index: 0;
 }
 
 .mui-ripple {
-  border-radius: 50%;
-  height: 50px;
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
   position: absolute;
   top: 0;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  overflow: hidden;
+  left: 0;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
 
   &.mui--is-animating {
     transition: transform 0.3s cubic-bezier(0, 0, 0.2, 1),
@@ -59,11 +55,4 @@
 
 .mui-btn--flat .mui-ripple {
   background-color: $mui-btn-flat-ripple-color;
-}
-
-.mui-btn[disabled] 
-.mui-btn.mui-btn--disabled {
-  .mui-ripple {
-    background-color: transparent;
-  }
 }
